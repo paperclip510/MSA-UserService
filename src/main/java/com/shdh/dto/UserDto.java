@@ -1,6 +1,9 @@
 package com.shdh.dto;
 
 import java.util.Date;
+import java.util.List;
+
+import com.shdh.vo.ResponseOrder;
 
 import lombok.Data;
 
@@ -13,4 +16,6 @@ public class UserDto {
 	private Date createdAt;
 	
 	private String encryptedPwd;
+	
+	private List<ResponseOrder> orders;
 }
