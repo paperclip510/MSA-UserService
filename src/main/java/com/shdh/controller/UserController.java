@@ -24,7 +24,7 @@ import com.shdh.vo.RequestUser;
 import com.shdh.vo.ResponseUser;
 
 @RestController
-@RequestMapping("/user-service/")
+@RequestMapping(value = "/user-service/**")
 public class UserController {
 	Environment env;
 	private UserService userSerivce;

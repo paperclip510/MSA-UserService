@@ -18,15 +18,15 @@ import com.shdh.vo.ResponseOrder;
 
 @Service
 public class UserServiceImpl implements UserService {
-	UserRepository userRepsitory;
+	UserRepository userRepository;
 	BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
-	public UserServiceImpl(UserRepository userRepsitory, BCryptPasswordEncoder passwordEncoder) {
+	public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
 		// 생성자로 의존성 주입.
 		// BCryptPasswordEncoder 는 한번도 선언 된 적이 없기 때문에 @Service 생성자 파라미터로 추가 할수 없다.
 		// 이를 해결하기 위해 @Service가 실행 되기 전에 @Bean으로 등록 해주어야 한다. -> UserServiceApplication
-		this.userRepsitory = userRepsitory;
+		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 		userEntity.setEncryptedPwd(passwordEncoder.encode(userDto.getPwd()));
 		
 		// insert into database
-		userRepsitory.save(userEntity);
+		userRepository.save(userEntity);
 
 		UserDto returnUserDto = mapper.map(userEntity, UserDto.class);
 
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto getUserByUserId(String userId) {
-		UserEntity userEntity = userRepsitory.findByUserId(userId);
+		UserEntity userEntity = userRepository.findByUserId(userId);
 		
 		if(userEntity == null) {
 			throw new UsernameNotFoundException("User not found");
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Iterable<UserEntity> getUserByAll() {		
-		return userRepsitory.findAll();
+		return userRepository.findAll();
 	}
 
 	
