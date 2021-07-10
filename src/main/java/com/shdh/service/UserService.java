@@ -15,5 +15,4 @@ public interface UserService extends UserDetailsService{
 	// 전체 사용자 조회
 	Iterable<UserEntity> getUserByAll();
 
-	
 }

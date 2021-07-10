@@ -1,6 +1,6 @@
 package com.shdh.security;
 
-import org.hibernate.cfg.Environment;
+import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -36,7 +36,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
 		// /users/** URI에 대해서 모두 허가한다.
 		http.authorizeRequests().antMatchers("/**")
-								.hasIpAddress("127.0.0.1")
+								.hasIpAddress("172.30.1.35")
 								.and()
 								.addFilter(getAuthenticationFilter());
 		
