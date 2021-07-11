@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -15,12 +17,22 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shdh.dto.UserDto;
+import com.shdh.service.UserService;
 import com.shdh.vo.RequestLogin;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+	private Environment env;
+	private UserService userService;
+
+	public AuthenticationFilter(AuthenticationManager authenticationManager, Environment env, UserService userService) {
+		super.setAuthenticationManager(authenticationManager);
+		this.env = env;
+		this.userService = userService;
+	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -35,7 +47,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 					// spring security 에서 사용할수 있도록 오브젝트 변환.
 					new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>()));
 
-
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -46,12 +57,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		//super.successfulAuthentication(request, response, chain, authResult);
+		// super.successfulAuthentication(request, response, chain, authResult);
 		log.debug(SPRING_SECURITY_FORM_PASSWORD_KEY);
-		log.debug(((User)authResult.getPrincipal()).getUsername());
+		log.debug(((User) authResult.getPrincipal()).getUsername());
 		// 로그인 성공시 어떤 처리를 해줄 것인지에 관한 로직.
-		
-		
+
+		String userName = ((User) authResult.getPrincipal()).getUsername();
+		UserDto userDetails = userService.getUserDetailsByEmail(userName);
+
 	}
 
 }

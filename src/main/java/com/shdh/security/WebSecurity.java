@@ -17,57 +17,45 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	private Environment env;
 	private UserService userService;
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
+
 	@Autowired
 	public WebSecurity(Environment env, UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
 		this.env = env;
 		this.userService = userService;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
-	
-	
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// 권한.
 		http.csrf().disable();
-		
+
 //		// /users/** URI에 대해서 모두 허가한다.
 //		http.authorizeRequests().antMatchers("/users/**").permitAll();
 
 		// /users/** URI에 대해서 모두 허가한다.
-		http.authorizeRequests().antMatchers("/**")
-								.hasIpAddress("172.30.1.35")
-								.and()
-								.addFilter(getAuthenticationFilter());
-		
-		
+		http.authorizeRequests().antMatchers("/**").hasIpAddress("172.30.1.27").and()
+				.addFilter(getAuthenticationFilter());
+
 		// 프레임으로 나눠진 http에서 정상 구동 되도록 한다.
 		http.headers().frameOptions().disable();
-		
+
 //		Using generated security password: 8d21b939-eb78-42c3-8acb-1bbb9d1f5a1f
 	}
 
-
-	
-
-
 	private AuthenticationFilter getAuthenticationFilter() throws Exception {
-		AuthenticationFilter authenticationFilter = new AuthenticationFilter();
-		authenticationFilter.setAuthenticationManager(authenticationManager());
+		AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager(), env, userService);
+		// authenticationFilter.setAuthenticationManager(authenticationManager());
 		return authenticationFilter;
 	}
 
-
-	//인증 처리를 위한 Configure 메소드
-	// pwd(encrpted) == input_pwd(encrpted) 
+	// 인증 처리를 위한 Configure 메소드
+	// pwd(encrpted) == input_pwd(encrpted)
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		// select pwd from users email = ?
 		auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
-		
+
 	}
-	
-	
-	
 
 }
