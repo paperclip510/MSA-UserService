@@ -54,6 +54,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		// select pwd from users email = ?
+		// 패스워드 인코딩 
 		auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
 
 	}

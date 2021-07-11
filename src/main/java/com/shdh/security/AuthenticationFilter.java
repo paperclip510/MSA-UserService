@@ -2,6 +2,7 @@ package com.shdh.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,6 +22,8 @@ import com.shdh.dto.UserDto;
 import com.shdh.service.UserService;
 import com.shdh.vo.RequestLogin;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -65,6 +68,17 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		String userName = ((User) authResult.getPrincipal()).getUsername();
 		UserDto userDetails = userService.getUserDetailsByEmail(userName);
 
+		String token = Jwts.builder().setSubject(userDetails.getUserId())
+				.setExpiration(
+						new Date(
+								System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))
+								)
+						)
+				.signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+				.compact();
+
+		response.addHeader("token", token);
+		response.addHeader("userId", userDetails.getUserId());
 	}
 
 }
