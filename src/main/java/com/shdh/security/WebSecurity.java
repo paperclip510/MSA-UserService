@@ -33,8 +33,12 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 //		// /users/** URI에 대해서 모두 허가한다.
 //		http.authorizeRequests().antMatchers("/users/**").permitAll();
 
+		// /actuator로 들어오는 모든 요청에 대해 허가한다.
+		http.authorizeRequests().antMatchers("/actuator/**").permitAll();
 		// /users/** URI에 대해서 모두 허가한다.
-		http.authorizeRequests().antMatchers("/**").hasIpAddress("172.30.1.27").and()
+		http.authorizeRequests().antMatchers("/**")
+				.hasIpAddress("172.30.1.25")
+				.and()
 				.addFilter(getAuthenticationFilter());
 
 		// 프레임으로 나눠진 http에서 정상 구동 되도록 한다.

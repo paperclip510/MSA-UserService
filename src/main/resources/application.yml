@@ -36,7 +36,15 @@ logging:
   level:
     com.shdh: DEBUG
     
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans
     
-token:
-  expiration_time: 86400000
-  secret: user_token
+ 
+# config-server로 이전.    
+#token:
+#  expiration_time: 86400000
+#  secret: user_token
