@@ -93,6 +93,12 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		
+		<!-- RabbitMQ spring cloud bus amqp -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bus-amqp</artifactId>
+		</dependency>
+		 
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
