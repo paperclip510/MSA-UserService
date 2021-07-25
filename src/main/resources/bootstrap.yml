@@ -4,6 +4,6 @@ spring:
       uri: http://127.0.0.1:8888
       #name: ecommerce
       # config 서버의 어플리케이션 네임을 사용하게 되면 application.yml 파일을 불러온다.
-      name: config-service
+      name: user-service
 #  profiles:
 #    active: dev
