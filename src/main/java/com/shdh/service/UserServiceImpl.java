@@ -22,7 +22,6 @@ import com.shdh.jpa.UserRepository;
 import com.shdh.vo.ResponseOrder;
 
 import feign.FeignException;
-import feign.Logger;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -80,14 +79,10 @@ public class UserServiceImpl implements UserService {
 		
 		UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
 		
-		/* Using a feign client */
-		/* Feign Exception Handling */
-		List<ResponseOrder> orderList = null;
-		try {
-			orderList = orderServiceClient.getOrders(userId);			
-		}catch(FeignException e) {
-			log.error(e.getMessage());
-		}
+		/* Using a feign client */		
+		/* Feign Exception Handling - FeignErrorDecoder */
+		List<ResponseOrder> orderList= orderServiceClient.getOrders(userId);	
+		
 		
 		userDto.setOrders(orderList);
 		

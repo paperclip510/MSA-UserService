@@ -40,4 +40,10 @@ public class UserServiceApplication {
 		return Logger.Level.FULL;
 	}
 	
+	//FeignErrorDecoder Bean-> Component
+//	@Bean
+//	public FeignErrorDecoder getFeignErrorDecoder() {
+//		return new FeignErrorDecoder(null);
+//	}
+	
 }
