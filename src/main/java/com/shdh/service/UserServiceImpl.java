@@ -7,10 +7,7 @@ import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.shdh.client.OrderServiceClient;
 import com.shdh.dto.UserDto;
 import com.shdh.jpa.UserEntity;
 import com.shdh.jpa.UserRepository;
@@ -29,9 +27,14 @@ public class UserServiceImpl implements UserService {
 	BCryptPasswordEncoder passwordEncoder;
 	Environment env;
 	RestTemplate restTemplate;
-
+	OrderServiceClient orderServiceClient;
+	
 	@Autowired
-	public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env, RestTemplate restTemplate) {
+	public UserServiceImpl(UserRepository userRepository, 
+							BCryptPasswordEncoder passwordEncoder, 
+							Environment env, 
+							RestTemplate restTemplate,
+							OrderServiceClient orderServiceClient) {
 		// 생성자로 의존성 주입.
 		// BCryptPasswordEncoder 는 한번도 선언 된 적이 없기 때문에 @Service 생성자 파라미터로 추가 할수 없다.
 		// 이를 해결하기 위해 @Service가 실행 되기 전에 @Bean으로 등록 해주어야 한다. -> UserServiceApplication
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
 		this.passwordEncoder = passwordEncoder;
 		this.env = env;
 		this.restTemplate = restTemplate;
+		this.orderServiceClient = orderServiceClient;
 	}
 
 	@Override
@@ -73,14 +77,17 @@ public class UserServiceImpl implements UserService {
 
 		//List<ResponseOrder> orders =  new ArrayList<>();
 		
-		// using as rest template
-		//String orderUrl = "http://127.0.0.1:8000/order-service/%s/orders";
-		String orderUrl = String.format(env.getProperty("order_service.url"),userId);
-		ResponseEntity<List<ResponseOrder>> orderListResponse = 
-				restTemplate.exchange(orderUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<ResponseOrder>>() {});
 		
+//		// using as rest template
+//		//String orderUrl = "http://127.0.0.1:8000/order-service/%s/orders";
+//		String orderUrl = String.format(env.getProperty("order_service.url"),userId);
+//		ResponseEntity<List<ResponseOrder>> orderListResponse = 
+//				restTemplate.exchange(orderUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<ResponseOrder>>() {});
+//		
+//		List<ResponseOrder> orderList = orderListResponse.getBody();
 		
-		List<ResponseOrder> orderList = orderListResponse.getBody();
+		/* Using a feign client */
+		List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
 		
 		userDto.setOrders(orderList);
 		

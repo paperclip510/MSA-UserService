@@ -38,7 +38,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		// /users/** URI에 대해서 모두 허가한다.
 		http.authorizeRequests().antMatchers("/**")
 				//.hasIpAddress("172.30.1.8")
-				.hasIpAddress("192.168.0.69")
+				.hasIpAddress("172.30.1.28")
 				.and()
 				.addFilter(getAuthenticationFilter());
 
