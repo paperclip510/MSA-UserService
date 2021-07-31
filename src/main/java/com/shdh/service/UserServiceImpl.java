@@ -21,7 +21,12 @@ import com.shdh.jpa.UserEntity;
 import com.shdh.jpa.UserRepository;
 import com.shdh.vo.ResponseOrder;
 
+import feign.FeignException;
+import feign.Logger;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 	UserRepository userRepository;
 	BCryptPasswordEncoder passwordEncoder;
@@ -74,20 +79,15 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
-
-		//List<ResponseOrder> orders =  new ArrayList<>();
-		
-		
-//		// using as rest template
-//		//String orderUrl = "http://127.0.0.1:8000/order-service/%s/orders";
-//		String orderUrl = String.format(env.getProperty("order_service.url"),userId);
-//		ResponseEntity<List<ResponseOrder>> orderListResponse = 
-//				restTemplate.exchange(orderUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<ResponseOrder>>() {});
-//		
-//		List<ResponseOrder> orderList = orderListResponse.getBody();
 		
 		/* Using a feign client */
-		List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
+		/* Feign Exception Handling */
+		List<ResponseOrder> orderList = null;
+		try {
+			orderList = orderServiceClient.getOrders(userId);			
+		}catch(FeignException e) {
+			log.error(e.getMessage());
+		}
 		
 		userDto.setOrders(orderList);
 		

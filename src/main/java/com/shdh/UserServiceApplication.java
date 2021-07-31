@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
+import feign.Logger;
+
 @SpringBootApplication
 @EnableDiscoveryClient // 유레카 서버 등록.
 @EnableFeignClients
@@ -32,5 +34,10 @@ public class UserServiceApplication {
 		return new RestTemplate();
 	}
 	
+	//FeignClient Logger
+	@Bean
+	public Logger.Level feignLoggerLevel(){
+		return Logger.Level.FULL;
+	}
 	
 }

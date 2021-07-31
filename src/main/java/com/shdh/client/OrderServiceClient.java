@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.shdh.vo.ResponseOrder;
 
-// 유레카에 등록된 서비스 네
+// 유레카에 등록된 서비스 네임 
 @FeignClient(name="ORDER-SERVICE")
 public interface OrderServiceClient {
 
-	@GetMapping("/order-service/{userId}/orders")
+	@GetMapping("/order-service/{userId}/orders_ng")
 	List<ResponseOrder> getOrders(@PathVariable String userId);
 }

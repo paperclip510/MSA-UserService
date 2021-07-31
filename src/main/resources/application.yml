@@ -39,7 +39,7 @@ greeting:
       
 logging:
   level:
-    com.shdh: DEBUG
+    '[com.shdh.client]': DEBUG
     
 
 management:
