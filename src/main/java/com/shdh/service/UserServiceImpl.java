@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +23,6 @@ import com.shdh.jpa.UserEntity;
 import com.shdh.jpa.UserRepository;
 import com.shdh.vo.ResponseOrder;
 
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -32,13 +33,15 @@ public class UserServiceImpl implements UserService {
 	Environment env;
 	RestTemplate restTemplate;
 	OrderServiceClient orderServiceClient;
+	CircuitBreakerFactory circuitBreakerFactory;
 	
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, 
 							BCryptPasswordEncoder passwordEncoder, 
 							Environment env, 
 							RestTemplate restTemplate,
-							OrderServiceClient orderServiceClient) {
+							OrderServiceClient orderServiceClient,
+							CircuitBreakerFactory circuitBreakerFactory) {
 		// 생성자로 의존성 주입.
 		// BCryptPasswordEncoder 는 한번도 선언 된 적이 없기 때문에 @Service 생성자 파라미터로 추가 할수 없다.
 		// 이를 해결하기 위해 @Service가 실행 되기 전에 @Bean으로 등록 해주어야 한다. -> UserServiceApplication
@@ -47,6 +50,7 @@ public class UserServiceImpl implements UserService {
 		this.env = env;
 		this.restTemplate = restTemplate;
 		this.orderServiceClient = orderServiceClient;
+		this.circuitBreakerFactory = circuitBreakerFactory;
 	}
 
 	@Override
@@ -81,7 +85,13 @@ public class UserServiceImpl implements UserService {
 		
 		/* Using a feign client */		
 		/* Feign Exception Handling - FeignErrorDecoder */
-		List<ResponseOrder> orderList= orderServiceClient.getOrders(userId);	
+		//List<ResponseOrder> orderList= orderServiceClient.getOrders(userId);	
+		
+		// circuitbreaker
+		CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+		List<ResponseOrder> orderList = 
+				circuitBreaker.run(() -> orderServiceClient.getOrders(userId)
+				, throwable -> new ArrayList<>());
 		
 		
 		userDto.setOrders(orderList);
