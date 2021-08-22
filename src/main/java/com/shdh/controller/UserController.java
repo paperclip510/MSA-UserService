@@ -23,6 +23,8 @@ import com.shdh.vo.Greeting;
 import com.shdh.vo.RequestUser;
 import com.shdh.vo.ResponseUser;
 
+import io.micrometer.core.annotation.Timed;
+
 @RestController
 //@RequestMapping(value = "/user-service/**")
 @RequestMapping(value = "/")
@@ -40,6 +42,7 @@ public class UserController {
 	private Greeting greeting;
 
 	@GetMapping("/health_check")
+	@Timed(value="uers.status", longTask = true)
 	public String healthCheck() {
 		return String.format("It's Working in User Servie")
 				+ "\n\tport(local.server.port)="+env.getProperty("local.server.port")
@@ -49,6 +52,7 @@ public class UserController {
 	}
 
 	@GetMapping("/welcome")
+	@Timed(value="uers.welcome", longTask = true)
 	public String welcome() {
 		// return env.getProperty("greeting.message");
 		return greeting.getMessage();
